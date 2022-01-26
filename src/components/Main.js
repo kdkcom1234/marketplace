@@ -71,20 +71,22 @@ class Main extends Component {
                   </td>
                   <td>{product.owner}</td>
                   <td>
-                    {!product.purchased ? (
-                      <button
-                        name={product.id}
-                        value={product.price}
-                        onClick={(event) => {
-                          this.props.purchaseProduct(
-                            event.target.name,
-                            event.target.value
-                          );
-                        }}
-                      >
-                        Buy
-                      </button>
-                    ) : null}
+                    {product.owner.toLowerCase() !==
+                      this.props.account.toLowerCase() &&
+                      !product.purchased && (
+                        <button
+                          name={product.id}
+                          value={product.price}
+                          onClick={(event) => {
+                            this.props.purchaseProduct(
+                              event.target.name,
+                              event.target.value
+                            );
+                          }}
+                        >
+                          Buy
+                        </button>
+                      )}
                   </td>
                 </tr>
               );

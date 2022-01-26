@@ -19,6 +19,14 @@ class App extends Component {
 
       // provider 설정(proxy 또는 websocket)
       window.web3 = new Web3(window.ethereum);
+      // window.web3 = new Web3("ws://127.0.0.1:7545");
+      // console.log(window.ethereum);
+
+      // // web socket provider 설정
+      // const eventProvider = new Web3.providers.WebsocketProvider(
+      //   "ws://127.0.0.1:7545"
+      // );
+      // window.web3.setProvider(eventProvider);
 
       // 지갑 연결
       //await window.ethereum.enable(); // deprecated
@@ -59,13 +67,14 @@ class App extends Component {
         Marketplace.abi,
         networkData.address
       );
-      console.log(marketplace);
+      // console.log(marketplace);
       this.setState({ marketplace });
 
       // 컨트랙트의 메서드 호출
+      // ** productCount라는 변수의 값 조회
       const productCount = await marketplace.methods.productCount().call();
       this.setState({ productCount });
-      console.log(productCount.toString());
+      // console.log(productCount.toString());
 
       // Load products
       for (var i = 1; i <= productCount; i++) {
@@ -82,14 +91,30 @@ class App extends Component {
   }
 
   createProduct(name, price) {
-    this.setState({ loading: true });
+    // 컨트랙트의 메서드 호출
+    // send({from}) => msg.sender
+    // this.setState({ loading: true });
     this.state.marketplace.methods
       .createProduct(name, price)
       .send({ from: this.state.account });
     // .once("receipt", (receipt) => {
     //   this.setState({ loading: false });
     // });
-    this.setState({ loading: false });
+
+    // this.state.marketplace.events.ProductCreated({}, (error, data) => {
+    //   if (error) console.log("Error: " + error);
+    //   else console.log("Log data: " + data);
+    // });
+  }
+
+  purchaseProduct(id, price) {
+    // this.setState({ loading: true });
+    this.state.marketplace.methods
+      .purchaseProduct(id)
+      .send({ from: this.state.account, value: price });
+    // .once("receipt", (receipt) => {
+    //   this.setState({ loading: false });
+    // });
   }
 
   constructor(props) {
@@ -102,6 +127,7 @@ class App extends Component {
     };
 
     this.createProduct = this.createProduct.bind(this);
+    this.purchaseProduct = this.purchaseProduct.bind(this);
   }
 
   async componentWillMount() {
@@ -124,8 +150,10 @@ class App extends Component {
             </div>
           ) : (
             <Main
-              createProduct={this.createProduct}
+              account={this.state.account}
               products={this.state.products}
+              createProduct={this.createProduct}
+              purchaseProduct={this.purchaseProduct}
             />
           )}
         </main>
